@@ -94,25 +94,29 @@ TSet TSet::operator~() {
 	return res;
 }
 std::istream& operator>>(std::istream& istr, TSet& bf) {
-	char ch;
-	for (size_t i = 0; i < bf.MaxPower; ++i) {
-		istr >> ch;
-		if (ch == '1') {
-			bf.BitField.SetBit(i);
-		}
-		else if (ch == '0') {
-			bf.BitField.ClrBit(i);
-		}
-		else {
-			std::cerr << "Error: Invalid number (must be 1 or 0)!\n";
+	for (int i = 0; i < bf.MaxPower; ++i) {
+		bf.BitField.ClrBit(i);
+	}
+	int elem;
+	while (istr >> elem) {
+		if (elem < 0 || elem >= bf.MaxPower) {
+			std::cerr << "Error: element outside the set\n";
 			return istr;
 		}
+		bf.BitField.SetBit(elem);
 	}
 	return istr;
 }
 std::ostream& operator<<(std::ostream& ostr, const TSet& bf) {
-	for (size_t i = 0; i < bf.MaxPower; ++i) {
-		ostr << bf.BitField.GetBit(i);
+	bool flag = true;
+	for (int i = 0; i < bf.MaxPower; ++i) {
+		if (bf.BitField.GetBit(i)) {
+			if (!flag) {
+				ostr << " ";
+			}
+			ostr << i;
+			flag = false;
+		}
 	}
 	return ostr;
 }
