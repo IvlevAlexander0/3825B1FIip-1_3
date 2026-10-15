@@ -1,4 +1,4 @@
-#include "C:\Users\Пользователь\Downloads\tset.h" 
+#include "tset.h"
 #include <stdexcept>
 
 TSet::TSet(int mp) : BitField(mp) {
@@ -45,7 +45,6 @@ int TSet::IsMember(const int Elem) const {
 int TSet::operator==(const TSet& s) const {
     if (MaxPower != s.MaxPower)
         return 0;
-
     return BitField == s.BitField;
 }
 
@@ -81,51 +80,19 @@ TSet TSet::operator-(const int Elem) {
 }
 
 TSet TSet::operator+(const TSet& s) {
-    int maxPower;
-    if (MaxPower > s.MaxPower) {
-        maxPower = MaxPower;
-    }
-    else {
-        maxPower = s.MaxPower;
+    if (MaxPower != s.MaxPower) {
+        throw std::invalid_argument("operator+: sets must have equal MaxPower");
     }
     TBitField bf = BitField | s.BitField;
-
-    if (bf.GetLength() < maxPower) {
-        TBitField tmp(maxPower);
-        for (int i = 0; i < bf.GetLength(); ++i) {
-            if (bf.GetBit(i)) {
-                tmp.SetBit(i);
-            }
-        }
-        bf = tmp;
-    }
-    TSet result(bf);
-    result.MaxPower = maxPower;
-    return result;
+    return TSet(bf);
 }
 
 TSet TSet::operator*(const TSet& s) {
-    int maxPower;
-    if (MaxPower > s.MaxPower) {
-        maxPower = MaxPower;
-    }
-    else {
-        maxPower = s.MaxPower;
+    if (MaxPower != s.MaxPower) {
+        throw std::invalid_argument("operator*: sets must have equal MaxPower");
     }
     TBitField bf = BitField & s.BitField;
-
-    if (bf.GetLength() < maxPower) {
-        TBitField tmp(maxPower);
-        for (int i = 0; i < bf.GetLength(); ++i) {
-            if (bf.GetBit(i)) {
-                tmp.SetBit(i);
-            }
-        }
-        bf = tmp;
-    }
-    TSet result(bf);
-    result.MaxPower = maxPower;
-    return result;
+    return TSet(bf);
 }
 
 TSet TSet::operator~() {
@@ -155,27 +122,23 @@ std::istream& operator>>(std::istream& istr, TSet& bf) {
         if (c == ',' || c == ' ') {
             continue;
         }
-
         if (c < '0' || c > '9') {
             throw std::invalid_argument("Invalid character");
         }
-
         int elem = c - '0';
         while (istr.peek() >= '0' && istr.peek() <= '9') {
             istr.get(c);
             elem = elem * 10 + (c - '0');
         }
-
         if (elem < 0 || elem >= bf.MaxPower) {
             throw std::out_of_range("Element out of range");
         }
         bf.BitField.SetBit(elem);
     }
     throw std::invalid_argument("Expected '}'");
-    return istr;
 }
-std::ostream& operator<<(std::ostream& ostr, const TSet& bf)
-{
+
+std::ostream& operator<<(std::ostream& ostr, const TSet& bf) {
     ostr << '{';
     bool first = true;
     for (int i = 0; i < bf.MaxPower; ++i) {

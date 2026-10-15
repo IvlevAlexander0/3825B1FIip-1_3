@@ -1,7 +1,8 @@
 #include "pch.h"
-#include "C:\Users\Пользователь\Downloads\tset.h" 
+#include "tset.h"
 #include <sstream>
 #include <stdexcept>
+#include <cstdlib>
 
 TEST(TSetTest, ConstructEmpty) {
     TSet s(10);
@@ -173,15 +174,11 @@ TEST(TSetTest, UnionTwoSets) {
     EXPECT_EQ(c.IsMember(3), 0);
 }
 
-TEST(TSetTest, UnionDifferentPower) {
+TEST(TSetTest, UnionDifferentPowerThrows) {
     TSet a(4), b(8);
     a.InsElem(0);
     b.InsElem(7);
-
-    TSet c = a + b;
-    EXPECT_EQ(c.GetMaxPower(), 8);
-    EXPECT_EQ(c.IsMember(0), 1);
-    EXPECT_EQ(c.IsMember(7), 1);
+    EXPECT_THROW(a + b, std::invalid_argument);
 }
 
 TEST(TSetTest, IntersectionTwoSets) {
@@ -200,16 +197,13 @@ TEST(TSetTest, IntersectionTwoSets) {
     EXPECT_EQ(c.IsMember(7), 0);
 }
 
-TEST(TSetTest, IntersectionDifferentPower) {
+
+TEST(TSetTest, IntersectionDifferentPowerThrows) {
     TSet a(4), b(8);
     a.InsElem(1);
     b.InsElem(1);
     b.InsElem(7);
-
-    TSet c = a * b;
-    EXPECT_EQ(c.GetMaxPower(), 8);
-    EXPECT_EQ(c.IsMember(1), 1);
-    EXPECT_EQ(c.IsMember(7), 0);
+    EXPECT_THROW(a * b, std::invalid_argument);
 }
 
 TEST(TSetTest, ComplementSimple) {
@@ -294,4 +288,30 @@ TEST(TSetTest, InputElementOutOfRangeThrows) {
     TSet s(5);
     std::istringstream is("{0, 7}");
     EXPECT_THROW(is >> s, std::out_of_range);
+}
+
+TEST(TSetTest, RandomMembership) {
+    srand(54321);
+    const int N = 32;
+    TSet s(N);
+    bool expected[N] = { false };
+
+    for (int step = 0; step < 300; ++step) {
+        int pos = rand() % N;
+        int op = rand() % 3;
+        if (op == 0) {
+            s.InsElem(pos);
+            expected[pos] = true;
+        }
+        else if (op == 1) {
+            s.DelElem(pos);
+            expected[pos] = false;
+        }
+        else {
+            EXPECT_EQ(s.IsMember(pos), expected[pos] ? 1 : 0);
+        }
+    }
+    for (int i = 0; i < N; ++i) {
+        EXPECT_EQ(s.IsMember(i), expected[i] ? 1 : 0) << "element " << i;
+    }
 }

@@ -1,14 +1,15 @@
-#include "C:\Users\Пользователь\Downloads\tbitfield.h" 
+#include "tbitfield.h"
 #include <stdexcept>
-#include <cstring>
+#include <string>
 
 int TBitField::GetMemIndex(const int n) const {
-    return n / (sizeof(TELEM) * 8);
+    return n / (int)(sizeof(TELEM) * 8);
 }
 
+
 TELEM TBitField::GetMemMask(const int n) const {
-    int bitPos = n % (sizeof(TELEM) * 8);
-    return 1 << bitPos;
+    int bitPos = n % (int)(sizeof(TELEM) * 8);
+    return static_cast<TELEM>(1u) << bitPos;
 }
 
 TBitField::TBitField(int len) {
@@ -16,12 +17,11 @@ TBitField::TBitField(int len) {
         throw std::invalid_argument("Length cannot be negative");
     }
     BitLen = len;
-    MemLen = (len + sizeof(TELEM) * 8 - 1) / (sizeof(TELEM) * 8);
-
+    MemLen = (len + (int)(sizeof(TELEM) * 8) - 1) / (int)(sizeof(TELEM) * 8);
     if (MemLen > 0) {
         pMem = new TELEM[MemLen];
         for (int i = 0; i < MemLen; ++i) {
-            pMem[i] = 0;
+            pMem[i] = 0u;
         }
     }
     else {
@@ -32,7 +32,6 @@ TBitField::TBitField(int len) {
 TBitField::TBitField(const TBitField& bf) {
     BitLen = bf.BitLen;
     MemLen = bf.MemLen;
-
     if (MemLen > 0) {
         pMem = new TELEM[MemLen];
         for (int i = 0; i < MemLen; ++i) {
@@ -96,11 +95,9 @@ TBitField& TBitField::operator=(const TBitField& bf) {
     if (this == &bf) {
         return *this;
     }
-
     delete[] pMem;
     BitLen = bf.BitLen;
     MemLen = bf.MemLen;
-
     if (MemLen > 0) {
         pMem = new TELEM[MemLen];
         for (int i = 0; i < MemLen; ++i) {
@@ -114,54 +111,22 @@ TBitField& TBitField::operator=(const TBitField& bf) {
 }
 
 TBitField TBitField::operator|(const TBitField& bf) {
-    int maxLen;
-    if (BitLen > bf.BitLen) {
-        maxLen = BitLen;
+    if (BitLen != bf.BitLen) {
+        throw std::invalid_argument("operator|: different lengths");
     }
-    else {
-        maxLen = bf.BitLen;
-    }
-    TBitField result(maxLen);
-    int minMemLen;
-    if (MemLen < bf.MemLen) {
-        minMemLen = MemLen;
-    }
-    else {
-        minMemLen = bf.MemLen;
-    }
-    for (int i = 0; i < minMemLen; ++i) {
+    TBitField result(BitLen);
+    for (int i = 0; i < MemLen; ++i) {
         result.pMem[i] = pMem[i] | bf.pMem[i];
-    }
-    if (MemLen > bf.MemLen) {
-        for (int i = minMemLen; i < MemLen; ++i) {
-            result.pMem[i] = pMem[i];
-        }
-    }
-    else {
-        for (int i = minMemLen; i < bf.MemLen; ++i) {
-            result.pMem[i] = bf.pMem[i];
-        }
     }
     return result;
 }
 
 TBitField TBitField::operator&(const TBitField& bf) {
-    int maxLen;
-    if (BitLen > bf.BitLen) {
-        maxLen = BitLen;
+    if (BitLen != bf.BitLen) {
+        throw std::invalid_argument("operator&: different lengths");
     }
-    else {
-        maxLen = bf.BitLen;
-    }
-    TBitField result(maxLen);
-    int minMemLen;
-    if (MemLen < bf.MemLen) {
-        minMemLen = MemLen;
-    }
-    else {
-        minMemLen = bf.MemLen;
-    }
-    for (int i = 0; i < minMemLen; ++i) {
+    TBitField result(BitLen);
+    for (int i = 0; i < MemLen; ++i) {
         result.pMem[i] = pMem[i] & bf.pMem[i];
     }
     return result;
@@ -169,10 +134,14 @@ TBitField TBitField::operator&(const TBitField& bf) {
 
 TBitField TBitField::operator~() {
     TBitField result(BitLen);
-    for (int i = 0; i < BitLen; ++i) {
-        if (GetBit(i) == 0) {
-            result.SetBit(i);
-        }
+    for (int i = 0; i < MemLen; ++i) {
+        result.pMem[i] = ~pMem[i];
+    }
+    
+    int bitsInLast = BitLen % (int)(sizeof(TELEM) * 8);
+    if (bitsInLast != 0 && MemLen > 0) {
+        TELEM mask = (static_cast<TELEM>(1u) << bitsInLast) - 1u;
+        result.pMem[MemLen - 1] &= mask;
     }
     return result;
 }
@@ -188,7 +157,7 @@ std::istream& operator>>(std::istream& istr, TBitField& bf) {
     }
 
     for (int i = 0; i < bf.MemLen; ++i) {
-        bf.pMem[i] = 0;
+        bf.pMem[i] = 0u;
     }
     int len = (int)s.length();
     if (len > bf.BitLen) {
@@ -201,6 +170,7 @@ std::istream& operator>>(std::istream& istr, TBitField& bf) {
     }
     return istr;
 }
+
 std::ostream& operator<<(std::ostream& ostr, const TBitField& bf) {
     for (int i = 0; i < bf.BitLen; ++i) {
         ostr << bf.GetBit(i);

@@ -1,7 +1,8 @@
 #include "pch.h"
-#include "C:\Users\Пользователь\Downloads\tbitfield.h" 
+#include "tbitfield.h"
 #include <sstream>
 #include <stdexcept>
+#include <cstdlib>
 
 TEST(TBitFieldTest, ConstructZeroLength) {
     TBitField bf(0);
@@ -126,15 +127,9 @@ TEST(TBitFieldTest, OrSameLength) {
     EXPECT_EQ(c.GetBit(3), 0);
 }
 
-TEST(TBitFieldTest, OrDifferentLength) {
+TEST(TBitFieldTest, OrDifferentLengthThrows) {
     TBitField a(4), b(8);
-    a.SetBit(0);
-    b.SetBit(7);
-
-    TBitField c = a | b;
-    EXPECT_EQ(c.GetLength(), 8);
-    EXPECT_EQ(c.GetBit(0), 1);
-    EXPECT_EQ(c.GetBit(7), 1);
+    EXPECT_THROW(a | b, std::invalid_argument);
 }
 
 TEST(TBitFieldTest, AndSameLength) {
@@ -154,16 +149,9 @@ TEST(TBitFieldTest, AndSameLength) {
     EXPECT_EQ(c.GetBit(7), 0);
 }
 
-TEST(TBitFieldTest, AndDifferentLength) {
+TEST(TBitFieldTest, AndDifferentLengthThrows) {
     TBitField a(4), b(8);
-    a.SetBit(1);
-    b.SetBit(1);
-    b.SetBit(7);
-
-    TBitField c = a & b;
-    EXPECT_EQ(c.GetLength(), 8);
-    EXPECT_EQ(c.GetBit(1), 1);
-    EXPECT_EQ(c.GetBit(7), 0);
+    EXPECT_THROW(a & b, std::invalid_argument);
 }
 
 TEST(TBitFieldTest, NotSimple) {
@@ -210,4 +198,30 @@ TEST(TBitFieldTest, InputValid) {
     EXPECT_EQ(bf.GetBit(2), 1);
     EXPECT_EQ(bf.GetBit(3), 0);
     EXPECT_EQ(bf.GetBit(4), 1);
+}
+
+TEST(TBitFieldTest, RandomSetGetClr) {
+    srand(12345);
+    const int N = 64;
+    TBitField bf(N);
+    bool expected[N] = { false };
+
+    for (int step = 0; step < 300; ++step) {
+        int pos = rand() % N;
+        int op = rand() % 3; 
+        if (op == 0) {
+            bf.SetBit(pos);
+            expected[pos] = true;
+        }
+        else if (op == 1) {
+            bf.ClrBit(pos);
+            expected[pos] = false;
+        }
+        else {
+            EXPECT_EQ(bf.GetBit(pos), expected[pos] ? 1 : 0);
+        }
+    }
+    for (int i = 0; i < N; ++i) {
+        EXPECT_EQ(bf.GetBit(i), expected[i] ? 1 : 0) << "bit " << i;
+    }
 }
