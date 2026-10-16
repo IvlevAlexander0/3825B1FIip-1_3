@@ -1,5 +1,6 @@
 #include "pch.h"
-#include "Tbitfield.h"
+#include <stdexcept>
+#include "tbitfield.h"
 
 TEST(TestTbitfield, TestConstruct) {
 	TBitField a(10);
@@ -71,18 +72,16 @@ TEST(TestTbitfield, TestEdgeCases) {
 	EXPECT_EQ(sa.GetLength(), 15);
 	EXPECT_EQ(sa.GetBit(3), 1);
 
-	TBitField f(-2);
-	EXPECT_EQ(f.GetLength(), 0);
+	EXPECT_THROW(TBitField f(-2), std::out_of_range);
 	TBitField h(0);
 	EXPECT_EQ(h.GetLength(), 0);
 
 	TBitField e(10);
-	e.SetBit(-1);
-	e.SetBit(10);
-	e.SetBit(100);
-	EXPECT_EQ(e.GetBit(-1), 0);
-	EXPECT_EQ(e.GetBit(10), 0);
-	EXPECT_EQ(e.GetBit(100), 0);
+	EXPECT_THROW(e.SetBit(-1), std::out_of_range);
+	EXPECT_THROW(e.SetBit(10), std::out_of_range);
+	EXPECT_THROW(e.SetBit(100), std::out_of_range);
+	EXPECT_THROW(e.GetBit(-1), std::out_of_range);
+	EXPECT_THROW(e.GetBit(10), std::out_of_range);
 
 	TBitField s(5);
 	TBitField l(40);
@@ -100,13 +99,13 @@ TEST(TestTbitfield, TestEdgeCases) {
 	EXPECT_EQ(a.GetBit(35), 0);
 
 	TBitField small(5);
-	TBitField large(100); 
+	TBitField large(100);
 
 	small.SetBit(2);
 	large.SetBit(95);
 	large = small;
 	EXPECT_EQ(large.GetLength(), 5);
 	EXPECT_EQ(large.GetBit(2), 1);
-	EXPECT_EQ(large.GetBit(95), 0);
+	EXPECT_THROW(large.GetBit(95), std::out_of_range);
 }
 

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "TSet.h"
+#include "tset.h"
 
 TEST(TestTSet, TestConstruct) {
 	TSet a(50);
@@ -73,15 +73,8 @@ TEST(TestTSet, TestLogicalOperator) {
 	small.InsElem(3);
 	large.InsElem(35);
 
-	TSet Union = small + large;
-	EXPECT_EQ(Union.GetMaxPower(), 40);
-	EXPECT_EQ(Union.IsMember(3), 1);
-	EXPECT_EQ(Union.IsMember(35), 1);
-
-	TSet intersection = small * large;
-	EXPECT_EQ(intersection.GetMaxPower(), 40);
-	EXPECT_EQ(intersection.IsMember(3), 0);
-	EXPECT_EQ(intersection.IsMember(35), 0);
+	EXPECT_THROW(TSet Union = small + large, std::invalid_argument);
+	EXPECT_THROW(TSet intersection = small * large;, std::invalid_argument);
 
 	TSet t(5);
 	t.InsElem(1);
@@ -124,12 +117,12 @@ TEST(TestTSet, TestSetEdgeCases) {
 	EXPECT_EQ(self.IsMember(7), 1);
 
 	TSet a(50);
-	a.InsElem(-1);
-	a.InsElem(50);
-	a.InsElem(55);
-	EXPECT_EQ(a.IsMember(-1), 0);
-	EXPECT_EQ(a.IsMember(50), 0);
-	EXPECT_EQ(a.IsMember(55), 0);
+	EXPECT_THROW(a.InsElem(-1), std::out_of_range);
+	EXPECT_THROW(a.InsElem(50), std::out_of_range);
+	EXPECT_THROW(a.InsElem(55), std::out_of_range);
+
+	EXPECT_THROW(a.IsMember(-1), std::out_of_range);
+	EXPECT_THROW(a.IsMember(50), std::out_of_range);
 
 	TSet s(20);
 	TSet plus = s + 5;
@@ -137,4 +130,7 @@ TEST(TestTSet, TestSetEdgeCases) {
 	EXPECT_EQ(s.IsMember(5), 0);
 	EXPECT_EQ(plus.IsMember(5), 1);
 	EXPECT_EQ(minus.IsMember(5), 0);
+
+	EXPECT_THROW(s + 25, std::out_of_range);
+	EXPECT_THROW(s - 25, std::out_of_range);
 }
