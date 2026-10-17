@@ -57,7 +57,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>C:\Users\Ярослава\Desktop\Новая папка\3825B1FIip-1_3\includes\Lab1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\includes\Lab1>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

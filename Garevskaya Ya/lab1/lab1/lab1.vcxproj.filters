@@ -26,7 +26,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Users\Ярослава\Desktop\Новая папка\3825B1FIip-1_3\includes\Lab1\tbitfield.h">
+    <ClInclude Include="..\..\includes\Lab1">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Users\Ярослава\Desktop\Новая папка\3825B1FIip-1_3\includes\Lab1\tset.h">
