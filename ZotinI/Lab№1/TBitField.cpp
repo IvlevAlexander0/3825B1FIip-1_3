@@ -1,15 +1,15 @@
 #include <iostream>
 #include <stdexcept>
-#include "C:\includes\tbitfield.h"
+#include "tbitfield.h"
 
-typedef unsigned int TELEM;
+const size_t bit = sizeof(TELEM) * 8;
 
 int TBitField::GetMemIndex(const int n) const {
-	return n >> 5;
+	return n / bit;
 }
 
 TELEM TBitField::GetMemMask(const int n) const {
-	return 1 << (n % 32);
+	return 1 << (n % bit);
 }
 
 TBitField::TBitField(int len) {
@@ -23,7 +23,7 @@ TBitField::TBitField(int len) {
 	}
 	else {
 		BitLen = len;
-		MemLen = (len + 31) / 32;
+		MemLen = (len + bit - 1) / bit;
 		pMem = new TELEM[MemLen];
 		for (int i = 0; i < MemLen; ++i) {
 			pMem[i] = 0;

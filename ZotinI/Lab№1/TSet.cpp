@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdexcept>
-#include "C:\includes\tset.h"
+#include "tset.h"
 
 TSet::TSet(int mp) : MaxPower(mp), BitField(mp) {
 	if (mp < 0) {
