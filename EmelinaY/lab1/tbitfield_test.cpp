@@ -127,9 +127,15 @@ TEST(TBitFieldTest, OrSameLength) {
     EXPECT_EQ(c.GetBit(3), 0);
 }
 
-TEST(TBitFieldTest, OrDifferentLengthThrows) {
+TEST(TBitFieldTest, OrDifferentLength) {
     TBitField a(4), b(8);
-    EXPECT_THROW(a | b, std::invalid_argument);
+    a.SetBit(0);
+    b.SetBit(7);
+
+    TBitField c = a | b;
+    EXPECT_EQ(c.GetLength(), 8);
+    EXPECT_EQ(c.GetBit(0), 1);
+    EXPECT_EQ(c.GetBit(7), 1);
 }
 
 TEST(TBitFieldTest, AndSameLength) {
@@ -149,9 +155,16 @@ TEST(TBitFieldTest, AndSameLength) {
     EXPECT_EQ(c.GetBit(7), 0);
 }
 
-TEST(TBitFieldTest, AndDifferentLengthThrows) {
+TEST(TBitFieldTest, AndDifferentLength) {
     TBitField a(4), b(8);
-    EXPECT_THROW(a & b, std::invalid_argument);
+    a.SetBit(1);
+    b.SetBit(1);
+    b.SetBit(7);
+
+    TBitField c = a & b;
+    EXPECT_EQ(c.GetLength(), 8);
+    EXPECT_EQ(c.GetBit(1), 1);
+    EXPECT_EQ(c.GetBit(7), 0);
 }
 
 TEST(TBitFieldTest, NotSimple) {
@@ -208,7 +221,7 @@ TEST(TBitFieldTest, RandomSetGetClr) {
 
     for (int step = 0; step < 300; ++step) {
         int pos = rand() % N;
-        int op = rand() % 3; 
+        int op = rand() % 3;
         if (op == 0) {
             bf.SetBit(pos);
             expected[pos] = true;

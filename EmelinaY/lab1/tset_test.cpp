@@ -172,6 +172,7 @@ TEST(TSetTest, UnionTwoSets) {
     EXPECT_EQ(c.IsMember(1), 1);
     EXPECT_EQ(c.IsMember(2), 1);
     EXPECT_EQ(c.IsMember(3), 0);
+    EXPECT_EQ(c.GetMaxPower(), 8);
 }
 
 TEST(TSetTest, UnionDifferentPowerThrows) {
@@ -195,8 +196,8 @@ TEST(TSetTest, IntersectionTwoSets) {
     EXPECT_EQ(c.IsMember(2), 1);
     EXPECT_EQ(c.IsMember(5), 1);
     EXPECT_EQ(c.IsMember(7), 0);
+    EXPECT_EQ(c.GetMaxPower(), 8);
 }
-
 
 TEST(TSetTest, IntersectionDifferentPowerThrows) {
     TSet a(4), b(8);
