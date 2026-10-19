@@ -107,29 +107,23 @@ TBitField& TBitField::operator=(const TBitField& bf)
 
 TBitField TBitField::operator|(const TBitField& bf)
 {
-    const int maxLen = (BitLen > bf.BitLen) ? BitLen : bf.BitLen;
-    TBitField res(maxLen);
+    if (BitLen != bf.BitLen)
+        throw std::invalid_argument("TBitField::operator|: different lengths");
 
-    const int minMem = (MemLen < bf.MemLen) ? MemLen : bf.MemLen;
-    for (int i = 0; i < minMem; ++i)
+    TBitField res(BitLen);
+    for (int i = 0; i < MemLen; ++i)
         res.pMem[i] = pMem[i] | bf.pMem[i];
-
-    const TBitField* longer = (MemLen > bf.MemLen) ? this : &bf;
-    for (int i = minMem; i < longer->MemLen; ++i)
-        res.pMem[i] = longer->pMem[i];
-
     return res;
 }
 
 TBitField TBitField::operator&(const TBitField& bf)
 {
-    const int maxLen = (BitLen > bf.BitLen) ? BitLen : bf.BitLen;
-    TBitField res(maxLen);
+    if (BitLen != bf.BitLen)
+        throw std::invalid_argument("TBitField::operator&: different lengths");
 
-    const int minMem = (MemLen < bf.MemLen) ? MemLen : bf.MemLen;
-    for (int i = 0; i < minMem; ++i)
+    TBitField res(BitLen);
+    for (int i = 0; i < MemLen; ++i)
         res.pMem[i] = pMem[i] & bf.pMem[i];
-
     return res;
 }
 

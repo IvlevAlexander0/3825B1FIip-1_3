@@ -103,10 +103,8 @@ TEST(TBitField, OrDifferentLengths)
 {
     TBitField a(5), b(10);
     a.SetBit(0); b.SetBit(9);
-    TBitField c = a | b;
-    EXPECT_EQ(c.GetLength(), 10);
-    EXPECT_EQ(c.GetBit(0), 1);
-    EXPECT_EQ(c.GetBit(9), 1);
+    EXPECT_THROW(a | b, std::invalid_argument);
+    EXPECT_THROW(a & b, std::invalid_argument);
 }
 
 TEST(TBitField, StreamOut)
@@ -271,10 +269,8 @@ TEST(TSet, UnionDifferentUniverses)
     TSet a(3), b(6);
     a.InsElem(0);
     b.InsElem(5);
-    TSet c = a + b;
-    EXPECT_EQ(c.GetMaxPower(), 6);
-    EXPECT_EQ(c.IsMember(0), 1);
-    EXPECT_EQ(c.IsMember(5), 1);
+    EXPECT_THROW(a + b, std::invalid_argument);
+    EXPECT_THROW(a * b, std::invalid_argument);
 }
 
 TEST(TSet, StreamOut)

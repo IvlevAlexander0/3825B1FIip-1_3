@@ -3,7 +3,6 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <stdexcept>
 
 TSet::TSet(int mp) : MaxPower(mp), BitField(mp)
 {
@@ -50,12 +49,14 @@ int TSet::IsMember(const int Elem) const
 
 int TSet::operator==(const TSet& s) const
 {
+    if (MaxPower != s.MaxPower)
+        return 0;
     return BitField == s.BitField;
 }
 
 int TSet::operator!=(const TSet& s) const
 {
-    return BitField != s.BitField;
+    return ~(*this == s);
 }
 
 TSet& TSet::operator=(const TSet& s)
@@ -83,18 +84,20 @@ TSet TSet::operator-(const int Elem)
 
 TSet TSet::operator+(const TSet& s)
 {
+    if (MaxPower != s.MaxPower)
+        throw std::invalid_argument("TSet::operator+: different universes");
+
     TBitField bf = BitField | s.BitField;
-    TSet res(bf);
-    res.MaxPower = (MaxPower > s.MaxPower) ? MaxPower : s.MaxPower;
-    return res;
+    return TSet(bf);
 }
 
 TSet TSet::operator*(const TSet& s)
 {
+    if (MaxPower != s.MaxPower)
+        throw std::invalid_argument("TSet::operator*: different universes");
+
     TBitField bf = BitField & s.BitField;
-    TSet res(bf);
-    res.MaxPower = (MaxPower > s.MaxPower) ? MaxPower : s.MaxPower;
-    return res;
+    return TSet(bf);
 }
 
 TSet TSet::operator~(void)
