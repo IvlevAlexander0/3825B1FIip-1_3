@@ -110,6 +110,7 @@ TSet TSet::operator~(void) {
     return result;
 }
 
+//Change 2
 std::istream& operator>>(std::istream& istr, TSet& s) {
     istr >> s.BitField;
     return istr;

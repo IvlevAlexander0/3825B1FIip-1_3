@@ -48,16 +48,18 @@ int TBitField::GetLength(void) const {
 
 
 void TBitField::SetBit(const int n) {
-    if (n >= 0 && n < BitLen) {
-        pMem[GetMemIndex(n)] |= GetMemMask(n);
+    if (n < 0 || n >= BitLen) {
+        throw std::out_of_range("TBitField: bit does not exist");
     }
+    pMem[GetMemIndex(n)] |= GetMemMask(n);
 }
 
 
 void TBitField::ClrBit(const int n) {
-    if (n >= 0 && n < BitLen) {
-        pMem[GetMemIndex(n)] &= ~GetMemMask(n);
+    if (n < 0 || n >= BitLen) {
+        throw std::out_of_range("TBitField: bit does not exist");
     }
+    pMem[GetMemIndex(n)] &= ~GetMemMask(n);
 }
 
 
@@ -71,11 +73,11 @@ int TBitField::GetBit(const int n) const {
 
 
 int TBitField::operator==(const TBitField& bf) const {
-    if (BitLen != bf.BitLen){
-        return 0;
-    }
-    for (int i = 0; i < MemLen; ++i) {
-        if (pMem[i] != bf.pMem[i]) {
+    int maxLen = std::max(BitLen, bf.BitLen);
+    for (int n = 0; n < maxLen; ++n) {
+        int a = (n < BitLen) ? GetBit(n) : 0;
+        int b = (n < bf.BitLen) ? bf.GetBit(n) : 0;
+        if (a != b) {
             return 0;
         }
     }
@@ -111,52 +113,45 @@ TBitField& TBitField::operator=(const TBitField& bf) {
 
 
 TBitField TBitField::operator|(const TBitField& bf) {
-    if (BitLen != bf.BitLen) {
-        throw std::invalid_argument("TBitField: different lengths");
+    int maxLen = std::max(BitLen, bf.BitLen);
+    TBitField result(maxLen);
+    for (int n = 0; n < maxLen; ++n) {
+        int a = (n < BitLen) ? GetBit(n) : 0;
+        int b = (n < bf.BitLen) ? bf.GetBit(n) : 0;
+        if (a || b) {
+            result.SetBit(n);
+        }
     }
-
-    TBitField result(BitLen);
-
-    for (int i = 0; i < MemLen; ++i) {
-        result.pMem[i] = pMem[i] | bf.pMem[i];
-    }
-
     return result;
 }
 
 
 TBitField TBitField::operator&(const TBitField& bf) {
-    if (BitLen != bf.BitLen) {
-        throw std::invalid_argument("TBitField: different lengths");
+    int maxLen = std::max(BitLen, bf.BitLen);
+    TBitField result(maxLen);
+
+    for (int n = 0; n < maxLen; ++n) {
+        int a = (n < BitLen) ? GetBit(n) : 0;
+        int b = (n < bf.BitLen) ? bf.GetBit(n) : 0;
+        if (a && b) {
+            result.SetBit(n);
+        }
     }
-
-    TBitField result(BitLen);
-
-    for (int i = 0; i < MemLen; ++i) {
-        result.pMem[i] = pMem[i] & bf.pMem[i];
-    }
-
     return result;
 }
 
 
 TBitField TBitField::operator~(void) {
     TBitField result(BitLen);
-
-    for (int i = 0; i < MemLen; ++i) {
-        result.pMem[i] = ~pMem[i];
+    for (int n = 0; n < BitLen; ++n) {
+        if (!GetBit(n)) {
+            result.SetBit(n);
+        }
     }
-
-    if (BitLen > 0 && BitLen % BITS_PER_CHUNK != 0) {
-        int used_bits = BitLen % BITS_PER_CHUNK;
-        TELEM mask = (TELEM(1) << used_bits) - 1;
-        result.pMem[MemLen - 1] &= mask;
-    }
-
     return result;
 }
 
-
+//Change 1
 std::istream& operator>>(std::istream& istr, TBitField& bf) {
     for (int n = 0; n < bf.BitLen; ++n) {
         char ch;
