@@ -1,7 +1,8 @@
-#include "pch.h"
+//#include "pch.h"
+#include <gtest/gtest.h>
 #include <stdexcept>
-#include "../Lab¹1/tbitfield.h"
-#include "../Lab¹1/tset.h"
+#include "../../../includes/Lab1/tbitfield.h"
+#include "../../../includes/Lab1/tset.h"
 
 TEST(TBitField, constructor) {
     TBitField bf1(10);

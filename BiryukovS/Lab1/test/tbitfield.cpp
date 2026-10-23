@@ -1,54 +1,20 @@
 #pragma once
-
+#include "../../../includes/Lab1/tbitfield.h"
 #include <iostream>
 #include <stdexcept>
 #include <string>
-typedef unsigned int TELEM;
 
-class TBitField
-{
-private:
-    int  BitLen; // длина битового поля - макс. к-во битов
-    TELEM* pMem; // память для представления битового поля
-    int  MemLen; // к-во эл-тов Мем для представления бит.поля
-
-    // методы реализации
-    int   GetMemIndex(const int n) const; // индекс в pМем для бита n       (#О2)
-    TELEM GetMemMask(const int n) const; // битовая маска для бита n       (#О3)
-public:
-    TBitField(int len);                //                                   (#О1)
-    TBitField(const TBitField& bf);    //                                   (#П1)
-    ~TBitField();                      //                                    (#С)
-
-    // доступ к битам
-    int GetLength(void) const;      // получить длину (к-во битов)           (#О)
-    void SetBit(const int n);       // установить бит                       (#О4)
-    void ClrBit(const int n);       // очистить бит                         (#П2)
-    int  GetBit(const int n) const; // получить значение бита               (#Л1)
-
-    // битовые операции
-    int operator==(const TBitField& bf) const; // сравнение                 (#О5)
-    int operator!=(const TBitField& bf) const; // сравнение
-    TBitField& operator=(const TBitField& bf); // присваивание              (#П3)
-    TBitField  operator|(const TBitField& bf); // операция "или"            (#О6)
-    TBitField  operator&(const TBitField& bf); // операция "и"              (#Л2)
-    TBitField  operator~(void);                // отрицание                  (#С)
-
-    friend std::istream& operator>>(std::istream& istr, TBitField& bf);       //      (#О7)
-    friend std::ostream& operator<<(std::ostream& ostr, const TBitField& bf); //      (#П4)
-};
-
-inline int TBitField::GetMemIndex(const int n) const {
+int TBitField::GetMemIndex(const int n) const {
     return n / 32;
 }
 
-inline TELEM TBitField::GetMemMask(const int n) const {
+TELEM TBitField::GetMemMask(const int n) const {
     int offset = n % 32;
     TELEM mask = (TELEM)1 << offset;
     return mask;
 }
 
-inline TBitField::TBitField(int len) {
+TBitField::TBitField(int len) {
     if (len < 0) {
         throw std::invalid_argument("TBitField: negative length");
     }
@@ -60,7 +26,7 @@ inline TBitField::TBitField(int len) {
     }
 }
 
-inline TBitField::TBitField(const TBitField& bf) {
+TBitField::TBitField(const TBitField& bf) {
     BitLen = bf.BitLen;
     MemLen = bf.MemLen;
     pMem = new TELEM[MemLen];
@@ -69,15 +35,15 @@ inline TBitField::TBitField(const TBitField& bf) {
     }
 }
 
-inline TBitField::~TBitField() {
+TBitField::~TBitField() {
     delete[] pMem;
 }
 
-inline int TBitField::GetLength(void) const {
+int TBitField::GetLength(void) const {
     return BitLen;
 }
 
-inline void TBitField::SetBit(const int n) {
+void TBitField::SetBit(const int n) {
     if (n < 0 || n >= BitLen) {
         throw std::out_of_range("TBitField::SetBit: index out of range");
     }
@@ -86,7 +52,7 @@ inline void TBitField::SetBit(const int n) {
     pMem[idx] = pMem[idx] | mask;
 }
 
-inline void TBitField::ClrBit(const int n) {
+void TBitField::ClrBit(const int n) {
     if (n < 0 || n >= BitLen) {
         throw std::out_of_range("TBitField::ClrBit: index out of range");
     }
@@ -95,7 +61,7 @@ inline void TBitField::ClrBit(const int n) {
     pMem[idx] = pMem[idx] & ~mask;
 }
 
-inline int TBitField::GetBit(const int n) const {
+int TBitField::GetBit(const int n) const {
     if (n < 0 || n >= BitLen) {
         throw std::out_of_range("TBitField::GetBit: index out of range");
     }
@@ -110,7 +76,7 @@ inline int TBitField::GetBit(const int n) const {
     }
 }
 
-inline int TBitField::operator==(const TBitField& bf) const {
+int TBitField::operator==(const TBitField& bf) const {
     if (BitLen != bf.BitLen) {
         return 0;
     }
@@ -122,7 +88,7 @@ inline int TBitField::operator==(const TBitField& bf) const {
     return 1;
 }
 
-inline int TBitField::operator!=(const TBitField& bf) const {
+int TBitField::operator!=(const TBitField& bf) const {
     if (*this == bf) {
         return 0;
     }
@@ -131,7 +97,7 @@ inline int TBitField::operator!=(const TBitField& bf) const {
     }
 }
 
-inline TBitField& TBitField::operator=(const TBitField& bf) {
+TBitField& TBitField::operator=(const TBitField& bf) {
     if (this == &bf) {
         return *this;
     }
@@ -147,7 +113,7 @@ inline TBitField& TBitField::operator=(const TBitField& bf) {
     return *this;
 }
 
-inline TBitField TBitField::operator|(const TBitField& bf) {
+TBitField TBitField::operator|(const TBitField& bf) {
     int maxLen;
     if (BitLen > bf.BitLen) {
         maxLen = BitLen;
@@ -165,7 +131,7 @@ inline TBitField TBitField::operator|(const TBitField& bf) {
     return result;
 }
 
-inline TBitField TBitField::operator&(const TBitField& bf) {
+TBitField TBitField::operator&(const TBitField& bf) {
     int maxLen;
     if (BitLen > bf.BitLen) {
         maxLen = BitLen;
@@ -183,7 +149,7 @@ inline TBitField TBitField::operator&(const TBitField& bf) {
     return result;
 }
 
-inline TBitField TBitField::operator~(void) {
+TBitField TBitField::operator~(void) {
     TBitField result(BitLen);
     for (int i = 0; i < MemLen; i++) {
         result.pMem[i] = ~pMem[i];
@@ -196,14 +162,14 @@ inline TBitField TBitField::operator~(void) {
     return result;
 }
 
-inline std::ostream& operator<<(std::ostream& ostr, const TBitField& bf) {
+std::ostream& operator<<(std::ostream& ostr, const TBitField& bf) {
     for (int i = 0; i < bf.BitLen; i++) {
         ostr << bf.GetBit(i);
     }
     return ostr;
 }
 
-inline std::istream& operator>>(std::istream& istr, TBitField& bf) {
+std::istream& operator>>(std::istream& istr, TBitField& bf) {
     std::string s;
     istr >> s;
     int len = (int)s.size();
