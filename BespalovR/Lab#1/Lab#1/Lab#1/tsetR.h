@@ -110,28 +110,30 @@ TSet TSet::operator~(void) {
     return result;
 }
 
-//Change 2
+//TODO
 std::istream& operator>>(std::istream& istr, TSet& s) {
-    istr >> s.BitField;
+    TSet temp(s.MaxPower);
+    int elem;
+
+    while (istr >> elem) {
+        if (elem == -1) {
+            break;
+        }
+        temp.InsElem(elem);
+    }
+
+    s = temp;
     return istr;
 }
 
+
+
 std::ostream& operator<<(std::ostream& ostr, const TSet& s) {
-    ostr << "{ ";
-
-    bool first = true;
-
-    for (int i = 0; i < s.MaxPower; ++i) {
+    for (int i = 0; i < s.GetMaxPower(); ++i) {
         if (s.IsMember(i)) {
-            if (!first) {
-                ostr << ", ";
-            }
-
-            ostr << i;
-            first = false;
+            ostr << i << ' ';
         }
     }
-
-    ostr << " }";
+    ostr << -1;
     return ostr;
 }

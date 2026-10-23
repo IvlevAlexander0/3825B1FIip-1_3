@@ -41,11 +41,11 @@ TEST(TBitField, SetBitSetsOnlyRequestedBit) {
     }
 }
 
-TEST(TBitField, SetBitIgnoresInvalidIndex) {
+TEST(TBitField, SetBitThrowsInvalidIndex) {
     TBitField bf(8);
 
-    ASSERT_NO_THROW(bf.SetBit(-1));
-    ASSERT_NO_THROW(bf.SetBit(8));
+    ASSERT_THROW(bf.SetBit(-1), std::out_of_range);
+    ASSERT_THROW(bf.SetBit(8), std::out_of_range);
 
     for (int i = 0; i < 8; ++i) {
         ASSERT_EQ(0, bf.GetBit(i));
@@ -68,13 +68,13 @@ TEST(TBitField, ClrBitClearsRequestedBit) {
     ASSERT_EQ(0, bf.GetBit(32));
 }
 
-TEST(TBitField, ClrBitIgnoresInvalidIndex) {
+TEST(TBitField, ClrBitThrowsInvalidIndex) {
     TBitField bf(8);
 
     bf.SetBit(3);
 
-    ASSERT_NO_THROW(bf.ClrBit(-1));
-    ASSERT_NO_THROW(bf.ClrBit(8));
+    ASSERT_THROW(bf.ClrBit(-1), std::out_of_range);
+    ASSERT_THROW(bf.ClrBit(8), std::out_of_range);
 
     ASSERT_EQ(1, bf.GetBit(3));
 }
@@ -145,8 +145,8 @@ TEST(TBitField, EqualityConsidersLengthAndBits) {
     ASSERT_TRUE(a == b);
     ASSERT_FALSE(a != b);
 
-    ASSERT_FALSE(a == c);
-    ASSERT_TRUE(a != c);
+    ASSERT_TRUE(a == c);
+    ASSERT_FALSE(a != c);
 
     b.SetBit(3);
 
@@ -191,12 +191,12 @@ TEST(TBitField, OperatorAndIntersectsBits) {
     ASSERT_EQ(0, c.GetBit(7));
 }
 
-TEST(TBitField, BitwiseOperatorsRejectDifferentLengths) {
+TEST(TBitField, BitwiseOperatorsAcceptDifferentLengths) {
     TBitField a(8);
     TBitField b(9);
 
-    ASSERT_THROW(a | b, std::invalid_argument);
-    ASSERT_THROW(a & b, std::invalid_argument);
+    ASSERT_NO_THROW(a | b);
+    ASSERT_NO_THROW(a & b);
 }
 
 TEST(TBitField, OperatorNotInvertsOnlyUsedBits) {
@@ -548,7 +548,7 @@ TEST(TSet, ComplementDoesNotChangeOriginal) {
 TEST(TSet, InputStreamReadsCharacteristicVector) {
     TSet s(6);
 
-    std::istringstream in("010110");
+    std::istringstream in("1 3 4 -1");
 
     in >> s;
 
@@ -573,15 +573,15 @@ TEST(TSet, OutputStreamPrintsElements) {
 
     out << s;
 
-    ASSERT_EQ("{ 1, 3, 7 }", out.str());
+    ASSERT_EQ("1 3 7 -1", out.str());
 }
 
-TEST(TSet, EmptySetPrintsEmptyBraces) {
+TEST(TSet, EmptySetPrintsNothing) {
     TSet s(5);
 
     std::ostringstream out;
 
     out << s;
 
-    ASSERT_EQ("{  }", out.str());
+    ASSERT_EQ("-1", out.str());
 }

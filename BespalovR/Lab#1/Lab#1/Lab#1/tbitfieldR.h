@@ -20,7 +20,7 @@ TBitField::TBitField(int len): BitLen(len), pMem(nullptr), MemLen(0)  {
 TBitField::TBitField(const TBitField& bf): BitLen(bf.BitLen), pMem(nullptr), MemLen(bf.MemLen) {
     if (MemLen > 0) {
         pMem = new TELEM[MemLen];
-        for (int i = 0; i < MemLen; ++i) {
+        for (size_t i = 0; i < MemLen; ++i) {
             pMem[i] = bf.pMem[i];
         }
     }
@@ -73,10 +73,10 @@ int TBitField::GetBit(const int n) const {
 
 
 int TBitField::operator==(const TBitField& bf) const {
-    int maxLen = std::max(BitLen, bf.BitLen);
-    for (int n = 0; n < maxLen; ++n) {
-        int a = (n < BitLen) ? GetBit(n) : 0;
-        int b = (n < bf.BitLen) ? bf.GetBit(n) : 0;
+    size_t maxLen = std::max(BitLen, bf.BitLen);
+    for (size_t n = 0; n < maxLen; ++n) {
+        bool a = (n < BitLen) ? GetBit(n) : 0;
+        bool b = (n < bf.BitLen) ? bf.GetBit(n) : 0;
         if (a != b) {
             return 0;
         }
@@ -99,7 +99,7 @@ TBitField& TBitField::operator=(const TBitField& bf) {
 
     if (bf.MemLen > 0) {
         newMem = new TELEM[bf.MemLen];
-        for (int i = 0; i < bf.MemLen; ++i) {
+        for (size_t i = 0; i < bf.MemLen; ++i) {
             newMem[i] = bf.pMem[i];
         }
     }
@@ -113,11 +113,11 @@ TBitField& TBitField::operator=(const TBitField& bf) {
 
 
 TBitField TBitField::operator|(const TBitField& bf) {
-    int maxLen = std::max(BitLen, bf.BitLen);
+    size_t maxLen = std::max(BitLen, bf.BitLen);
     TBitField result(maxLen);
-    for (int n = 0; n < maxLen; ++n) {
-        int a = (n < BitLen) ? GetBit(n) : 0;
-        int b = (n < bf.BitLen) ? bf.GetBit(n) : 0;
+    for (size_t n = 0; n < maxLen; ++n) {
+        bool a = (n < BitLen) ? GetBit(n) : 0;
+        bool b = (n < bf.BitLen) ? bf.GetBit(n) : 0;
         if (a || b) {
             result.SetBit(n);
         }
@@ -127,12 +127,11 @@ TBitField TBitField::operator|(const TBitField& bf) {
 
 
 TBitField TBitField::operator&(const TBitField& bf) {
-    int maxLen = std::max(BitLen, bf.BitLen);
+    size_t maxLen = std::max(BitLen, bf.BitLen);
     TBitField result(maxLen);
-
-    for (int n = 0; n < maxLen; ++n) {
-        int a = (n < BitLen) ? GetBit(n) : 0;
-        int b = (n < bf.BitLen) ? bf.GetBit(n) : 0;
+    for (size_t n = 0; n < maxLen; ++n) {
+        bool a = (n < BitLen) ? GetBit(n) : 0;
+        bool b = (n < bf.BitLen) ? bf.GetBit(n) : 0;
         if (a && b) {
             result.SetBit(n);
         }
@@ -143,7 +142,7 @@ TBitField TBitField::operator&(const TBitField& bf) {
 
 TBitField TBitField::operator~(void) {
     TBitField result(BitLen);
-    for (int n = 0; n < BitLen; ++n) {
+    for (size_t n = 0; n < BitLen; ++n) {
         if (!GetBit(n)) {
             result.SetBit(n);
         }
@@ -151,9 +150,10 @@ TBitField TBitField::operator~(void) {
     return result;
 }
 
-//Change 1
+
 std::istream& operator>>(std::istream& istr, TBitField& bf) {
-    for (int n = 0; n < bf.BitLen; ++n) {
+    TBitField temp(bf.BitLen);
+    for (size_t n = 0; n < bf.BitLen; ++n) {
         char ch;
         if (!(istr >> ch)) {
             return istr;
@@ -165,13 +165,13 @@ std::istream& operator>>(std::istream& istr, TBitField& bf) {
         }
 
         if (ch == '1') {
-            bf.SetBit(n);
+            temp.SetBit(n);
         }
         else {
-            bf.ClrBit(n);
+            temp.ClrBit(n);
         }
     }
-
+    bf = temp;
     return istr;
 }
 
