@@ -112,28 +112,27 @@ TSet TSet::operator~(void) {
 
 //TODO
 std::istream& operator>>(std::istream& istr, TSet& s) {
-    TSet temp(s.MaxPower);
-    int elem;
-
-    while (istr >> elem) {
-        if (elem == -1) {
-            break;
-        }
-        temp.InsElem(elem);
+    TBitField temp(s.BitField.GetLength());
+    int Elem;
+    while (istr >> Elem) {
+        temp.SetBit(Elem);
     }
-
-    s = temp;
+    s.BitField = temp;
     return istr;
 }
 
 
 
 std::ostream& operator<<(std::ostream& ostr, const TSet& s) {
+    bool first = true;
     for (int i = 0; i < s.GetMaxPower(); ++i) {
         if (s.IsMember(i)) {
-            ostr << i << ' ';
+            if (!first) {
+                ostr << " ";
+            }
+            ostr << i;
+            first=false;
         }
     }
-    ostr << -1;
     return ostr;
 }
