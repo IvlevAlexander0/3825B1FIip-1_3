@@ -103,8 +103,16 @@ TEST(TBitField, OrDifferentLengths)
 {
     TBitField a(5), b(10);
     a.SetBit(0); b.SetBit(9);
-    EXPECT_THROW(a | b, std::invalid_argument);
-    EXPECT_THROW(a & b, std::invalid_argument);
+
+    TBitField c = a | b;
+    EXPECT_EQ(c.GetLength(), 10);
+    EXPECT_EQ(c.GetBit(0), 1);
+    EXPECT_EQ(c.GetBit(9), 1);
+
+    TBitField d = a & b;
+    EXPECT_EQ(d.GetLength(), 10);
+    EXPECT_EQ(d.GetBit(0), 0);
+    EXPECT_EQ(d.GetBit(9), 0);
 }
 
 TEST(TBitField, StreamOut)
