@@ -1,6 +1,7 @@
-#include "../../includes/Lab1/tset.h"
+#include "tset.h"
 #include <iostream>
 #include <stdexcept>
+#include <string>
 
 TSet::TSet(int mp) : BitField(mp + 1) {
     MaxPower = mp;
@@ -99,6 +100,9 @@ std::ostream& operator<<(std::ostream& ostr, const TSet& set) {
 }
 
 std::istream& operator>>(std::istream& istr, TSet& set) {
+    for (int i = 0; i <= set.MaxPower; i++) {
+        set.DelElem(i);
+    }
     int x;
     while (istr >> x && x != -1) {
         set.InsElem(x);

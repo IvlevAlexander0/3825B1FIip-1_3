@@ -1,20 +1,20 @@
-﻿#include "../../includes/Lab1/tbitfield.h"
-#include "../../includes/Lab1/tset.h"
+﻿#include "tbitfield.h"
 #include <stdexcept>
 #include <string>
 
 int TBitField::GetMemIndex(const int n) const {
-    return n / 32;
+    return n / (sizeof(TELEM) * 8);
 }
 
 TELEM TBitField::GetMemMask(const int n) const {
-    return 1u << (n % 32);
+    return 1u << (n % (sizeof(TELEM) * 8));
 }
 
 TBitField::TBitField(int len) {
     if (len < 0) throw std::invalid_argument("Length cannot be negative");
     BitLen = len;
-    MemLen = (len + 31) / 32;
+    int bitsPerElem = sizeof(TELEM) * 8;
+    MemLen = (len + bitsPerElem - 1) / bitsPerElem;
     pMem = new TELEM[MemLen];
     for (int i = 0; i < MemLen; i++) {
         pMem[i] = 0;
@@ -102,7 +102,7 @@ TBitField TBitField::operator~(void) {
     for (int i = 0; i < MemLen; i++) {
         res.pMem[i] = ~pMem[i];
     }
-    int tail = BitLen % 32;
+    int tail = BitLen % (sizeof(TELEM) * 8);
     if (tail != 0 && MemLen > 0) {
         TELEM mask = (1u << tail) - 1;
         res.pMem[MemLen - 1] &= mask;
@@ -118,10 +118,13 @@ std::ostream& operator<<(std::ostream& ostr, const TBitField& bf) {
 }
 
 std::istream& operator>>(std::istream& istr, TBitField& bf) {
-    std::string s;
-    istr >> s;
-    for (int i = 0; i < bf.BitLen && i < (int)s.length(); i++) {
-        if (s[i] == '1') bf.SetBit(i);
+    char c;
+    for (int i = 0; i < bf.BitLen; i++) {
+        while (istr >> c && (c == ' ' || c == '\n' || c == '\r' || c == '\t')) {}
+
+        if (!istr) break;
+
+        if (c == '1') bf.SetBit(i);
         else bf.ClrBit(i);
     }
     return istr;
