@@ -1,4 +1,3 @@
-//#include "pch.h"
 #include <gtest/gtest.h>
 #include <stdexcept>
 #include "../../../includes/Lab1/tbitfield.h"
@@ -289,4 +288,16 @@ TEST(TSet, frombitfield) {
     EXPECT_TRUE(s.IsMember(2));
     EXPECT_TRUE(s.IsMember(7));
     EXPECT_FALSE(s.IsMember(3));
+}
+TEST(TBitField, differentsizes) {
+    TBitField a(10);
+    TBitField b(20);
+    EXPECT_THROW(a & b, std::invalid_argument);
+    EXPECT_THROW(a | b, std::invalid_argument);
+}
+TEST(TSet, differentuniveses) {
+    TSet a(10);
+    TSet b(20);
+    EXPECT_THROW(a + b, std::invalid_argument);
+    EXPECT_THROW(a * b, std::invalid_argument);
 }

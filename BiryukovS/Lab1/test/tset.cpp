@@ -1,4 +1,3 @@
-#pragma once
 #include <iostream>
 #include "../../../includes/Lab1/tset.h"
 #include "../../../includes/Lab1/tbitfield.h"
@@ -93,27 +92,19 @@ TSet TSet::operator-(const int Elem) {
 }
 
 TSet TSet::operator+(const TSet& s) {
-    int maxPow;
-    if (MaxPower > s.MaxPower) {
-        maxPow = MaxPower;
+    if (MaxPower != s.MaxPower) {
+        throw std::invalid_argument("Sets must be from the same universe");
     }
-    else {
-        maxPow = s.MaxPower;
-    }
-    TSet result(maxPow);
+    TSet result(MaxPower);
     result.BitField = BitField | s.BitField;
     return result;
 }
 
 TSet TSet::operator*(const TSet& s) {
-    int maxPow;
-    if (MaxPower > s.MaxPower) {
-        maxPow = MaxPower;
+    if (MaxPower != s.MaxPower) {
+        throw std::invalid_argument("Sets must be from the same universe");
     }
-    else {
-        maxPow = s.MaxPower;
-    }
-    TSet result(maxPow);
+    TSet result(MaxPower);
     result.BitField = BitField & s.BitField;
     return result;
 }
@@ -142,7 +133,7 @@ std::ostream& operator<<(std::ostream& ostr, const TSet& s) {
 
 std::istream& operator>>(std::istream& istr, TSet& s) {
     std::string str;
-    istr >> str;
+    std::getline(istr, str);
     int i = 0;
     int n = (int)str.size();
     while (i < n && str[i] != '{') i++;

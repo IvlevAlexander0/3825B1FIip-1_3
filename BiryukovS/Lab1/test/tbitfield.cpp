@@ -1,16 +1,17 @@
-#pragma once
 #include "../../../includes/Lab1/tbitfield.h"
 #include <iostream>
 #include <stdexcept>
 #include <string>
 
+const int unint = sizeof(unsigned int) * 8;
+
 int TBitField::GetMemIndex(const int n) const {
-    return n / 32;
+    return n / unint;
 }
 
 TELEM TBitField::GetMemMask(const int n) const {
-    int offset = n % 32;
-    TELEM mask = (TELEM)1 << offset;
+    int offset = n % unint;
+    TELEM mask = (TELEM)1u << offset;
     return mask;
 }
 
@@ -19,7 +20,7 @@ TBitField::TBitField(int len) {
         throw std::invalid_argument("TBitField: negative length");
     }
     BitLen = len;
-    MemLen = (len + 31) / 32;
+    MemLen = (len + unint - 1) / unint;
     pMem = new TELEM[MemLen];
     for (int i = 0; i < MemLen; i++) {
         pMem[i] = 0;
@@ -114,37 +115,23 @@ TBitField& TBitField::operator=(const TBitField& bf) {
 }
 
 TBitField TBitField::operator|(const TBitField& bf) {
-    int maxLen;
-    if (BitLen > bf.BitLen) {
-        maxLen = BitLen;
+    if (BitLen != bf.BitLen) {
+        throw std::invalid_argument("Sizes must be the same");
     }
-    else {
-        maxLen = bf.BitLen;
-    }
-    TBitField result(maxLen);
+    TBitField result(BitLen);
     for (int i = 0; i < MemLen; i++) {
-        result.pMem[i] = pMem[i];
-    }
-    for (int i = 0; i < bf.MemLen; i++) {
-        result.pMem[i] = result.pMem[i] | bf.pMem[i];
+        result.pMem[i] = pMem[i] | bf.pMem[i];
     }
     return result;
 }
 
 TBitField TBitField::operator&(const TBitField& bf) {
-    int maxLen;
-    if (BitLen > bf.BitLen) {
-        maxLen = BitLen;
+    if (BitLen != bf.BitLen) {
+        throw std::invalid_argument("Sizes must be the same");
     }
-    else {
-        maxLen = bf.BitLen;
-    }
-    TBitField result(maxLen);
+    TBitField result(BitLen);
     for (int i = 0; i < MemLen; i++) {
-        result.pMem[i] = pMem[i];
-    }
-    for (int i = 0; i < bf.MemLen; i++) {
-        result.pMem[i] = result.pMem[i] & bf.pMem[i];
+        result.pMem[i] = pMem[i] & bf.pMem[i];
     }
     return result;
 }
@@ -154,7 +141,7 @@ TBitField TBitField::operator~(void) {
     for (int i = 0; i < MemLen; i++) {
         result.pMem[i] = ~pMem[i];
     }
-    int tail = BitLen % 32;
+    int tail = BitLen % unint;
     if (tail != 0) {
         TELEM mask = (1u << tail) - 1;
         result.pMem[MemLen - 1] = result.pMem[MemLen - 1] & mask;
@@ -174,19 +161,12 @@ std::istream& operator>>(std::istream& istr, TBitField& bf) {
     istr >> s;
     int len = (int)s.size();
     if (len != bf.BitLen) {
-        delete[] bf.pMem;
-        bf.BitLen = len;
-        bf.MemLen = (len + 31) / 32;
-        bf.pMem = new TELEM[bf.MemLen];
-        for (int i = 0; i < bf.MemLen; i++) {
-            bf.pMem[i] = 0;
-        }
+        throw std::invalid_argument("Input length does not match BitField length");
     }
-    else {
-        for (int i = 0; i < bf.MemLen; i++) {
-            bf.pMem[i] = 0;
-        }
+    for (int i = 0; i < bf.MemLen; i++) {
+        bf.pMem[i] = 0;
     }
+    
     for (int i = 0; i < len; i++) {
         if (s[i] == '1') {
             bf.SetBit(i);
