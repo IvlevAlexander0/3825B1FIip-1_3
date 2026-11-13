@@ -1,0 +1,8 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="BitField/BitField.vcxproj" Id="90cd0d48-e9de-4c73-9f5f-5b0767d59d1f" />
+  <Project Path="BitFieldTests/BitFieldTests.vcxproj" Id="60e9dc5d-d92b-4ff6-9d35-a919ba611669" />
+</Solution>
