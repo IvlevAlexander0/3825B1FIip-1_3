@@ -1,0 +1,8 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="MatrixLib/MatrixLib.vcxproj" Id="1b547f6c-8671-4905-bf0c-8e60e9587eee" />
+  <Project Path="MatrixTest/MatrixTest.vcxproj" Id="9d12059b-6435-455c-9de6-f41ccc4ef5ec" />
+</Solution>
