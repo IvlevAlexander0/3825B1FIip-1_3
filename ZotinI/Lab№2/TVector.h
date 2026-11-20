@@ -1,4 +1,5 @@
-#include "pch.h"
+#pragma once
+
 #include <iostream>
 #include <stdexcept>
 #include "utmatrix.h"
@@ -8,7 +9,7 @@ using namespace std;
 
 template <class ValType>
 TVector<ValType>::TVector(int s, int si) {
-	if (s < 0 || s > MAX_VECTOR_SIZE || si < 0) {
+	if (s < 0 || s > MAX_VECTOR_SIZE || si < 0 || si > MAX_VECTOR_SIZE) {
 		throw out_of_range("Invalid size");
 	}
 
@@ -19,7 +20,7 @@ TVector<ValType>::TVector(int s, int si) {
 		pVector = nullptr;
 	}
 	else {
-		pVector = new ValType[Size];
+		pVector = new ValType[Size]();
 	}
 }
 

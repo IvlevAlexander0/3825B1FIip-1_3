@@ -1,7 +1,9 @@
-#include "pch.h"
+#pragma once
+
 #include <iostream>
 #include <stdexcept>
 #include "utmatrix.h"
+#include "TVector.h"
 
 using namespace std;
 

@@ -2,8 +2,8 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <ctime>
-#include <fstream>
-#include "TVector.cpp"
+
+#include "TVector.h"
 
 TEST(TestVector, Size) {
 	EXPECT_ANY_THROW(TVector<int> a(-1));

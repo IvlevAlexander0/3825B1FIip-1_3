@@ -5,10 +5,8 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
-#include <fstream>
 
-#include "TVector.cpp"
-#include "TMatrix.cpp"
+#include "TMatrix.h"
 
 
 TEST(TestMatrix, Constructs) {
@@ -120,4 +118,8 @@ TEST(TestMatrix, EdgeCases) {
     EXPECT_TRUE(m1 != m2);
     EXPECT_ANY_THROW(TMatrix<int> m(MAX_MATRIX_SIZE + 1));
     EXPECT_ANY_THROW(m1 - m3);
+
+    TMatrix<int> zero(3);
+    EXPECT_TRUE((m1 - m1) == zero);
+    EXPECT_TRUE((m1 - zero) == m1);
 }
