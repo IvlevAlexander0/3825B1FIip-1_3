@@ -4,6 +4,9 @@
 
 template <class ValType>
 TVector<ValType>::TVector(int s, int si) : Size(s), StartIndex(si) {
+	if (si < 0) {
+		throw std::out_of_range("Invalid start index!");
+	}
 	if (s < 0 || s > MAX_VECTOR_SIZE) {
 		throw std::out_of_range("Invalid vector size!");
 	}
@@ -186,8 +189,10 @@ bool TMatrix<ValType>::operator!=(const TMatrix& mt) const {
 template <class ValType>
 TMatrix<ValType>& TMatrix<ValType>::operator=(const TMatrix<ValType>& mt) {
 	if (this != &mt) {
+		if (this->Size != mt.Size) {
+			throw std::invalid_argument("Different matrix sizes!");
+		}
 		delete[] this->pVector;
-		this->Size = mt.Size;
 		this->StartIndex = mt.StartIndex;
 		if (this->Size > 0) {
 			this->pVector = new TVector<ValType>[this->Size];
