@@ -1,15 +1,14 @@
 #include "pch.h"
 #include "Utmatrixx.h"
 #include <stdexcept>
+#include <sstream>
 
 TEST(TMatrixTest, ConstructZeroMatrix) {
     TMatrix<int> m(3);
     EXPECT_EQ(m.GetSize(), 3);
-    for (int i = 0; i < 3; ++i) {
-        for (int j = i; j < 3; ++j) {
+    for (int i = 0; i < 3; ++i)
+        for (int j = i; j < 3; ++j)
             EXPECT_EQ(m[i][j], 0);
-        }
-    }
 }
 
 TEST(TMatrixTest, ConstructZeroSize) {
@@ -18,11 +17,11 @@ TEST(TMatrixTest, ConstructZeroSize) {
 }
 
 TEST(TMatrixTest, ConstructNegativeSizeThrows) {
-    EXPECT_THROW(TMatrix<int> m(-1), std::out_of_range);
+    EXPECT_THROW(TMatrix<int> m(-1), std::invalid_argument);
 }
 
 TEST(TMatrixTest, ConstructTooLargeSizeThrows) {
-    EXPECT_THROW(TMatrix<int> m(MAX_MATRIX_SIZE + 1), std::out_of_range);
+    EXPECT_THROW(TMatrix<int> m(MAX_MATRIX_SIZE + 1), std::invalid_argument);
 }
 
 TEST(TMatrixTest, RowStructure) {
@@ -132,12 +131,11 @@ TEST(TMatrixTest, MatrixSubtractionSizeMismatchThrows) {
 
 TEST(TMatrixTest, AdditionSubtractionRoundTrip) {
     TMatrix<int> a(4), b(4);
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
         for (int j = i; j < 4; ++j) {
             a[i][j] = i + j;
             b[i][j] = i * j;
         }
-    }
     TMatrix<int> c = (a + b) - b;
     EXPECT_TRUE(c == a);
 }
@@ -153,4 +151,22 @@ TEST(TMatrixTest, DiagonalAndUpperAccessible) {
     EXPECT_NO_THROW(m[0][2]);
     EXPECT_NO_THROW(m[1][1]);
     EXPECT_NO_THROW(m[2][2]);
+}
+
+TEST(MatrixIO, OutputFormat) {
+    TMatrix<int> mt(2);
+    mt[0][0] = 1; mt[0][1] = 2;
+    mt[1][1] = 3;
+    std::ostringstream out;
+    out << mt;
+    EXPECT_EQ(out.str(), "1 2 \n3 \n");
+}
+
+TEST(MatrixIO, InputFormat) {
+    TMatrix<int> mt(2);
+    std::istringstream in("10 20 30");
+    in >> mt;
+    EXPECT_EQ(mt[0][0], 10);
+    EXPECT_EQ(mt[0][1], 20);
+    EXPECT_EQ(mt[1][1], 30);
 }

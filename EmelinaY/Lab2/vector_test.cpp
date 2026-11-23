@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Utmatrixx.h"
 #include <stdexcept>
+#include <sstream>
 
 TEST(TVectorTest, DefaultConstructor) {
     TVector<int> v;
@@ -34,15 +35,11 @@ TEST(TVectorTest, ConstructorTooLargeSizeThrows) {
 
 TEST(TVectorTest, CopyConstructor) {
     TVector<int> a(4, 1);
-    for (int i = 1; i <= 4; ++i) {
-        a[i] = i * 10;
-    }
+    for (int i = 1; i <= 4; ++i) a[i] = i * 10;
     TVector<int> b(a);
     EXPECT_EQ(b.GetSize(), 4);
     EXPECT_EQ(b.GetStartIndex(), 1);
-    for (int i = 1; i <= 4; ++i) {
-        EXPECT_EQ(b[i], i * 10);
-    }
+    for (int i = 1; i <= 4; ++i) EXPECT_EQ(b[i], i * 10);
 }
 
 TEST(TVectorTest, CopyConstructorIndependence) {
@@ -204,4 +201,21 @@ TEST(TVectorTest, DotProductDouble) {
     a[0] = 1.5; a[1] = 2.0;
     b[0] = 2.0; b[1] = 3.0;
     EXPECT_DOUBLE_EQ(a * b, 9.0);
+}
+
+TEST(VectorIO, OutputFormat) {
+    TVector<int> v(3, 0);
+    v[0] = 1; v[1] = 2; v[2] = 3;
+    std::ostringstream out;
+    out << v;
+    EXPECT_EQ(out.str(), "1 2 3 ");
+}
+
+TEST(VectorIO, InputFormat) {
+    TVector<int> v(3, 0);
+    std::istringstream in("4 5 6");
+    in >> v;
+    EXPECT_EQ(v[0], 4);
+    EXPECT_EQ(v[1], 5);
+    EXPECT_EQ(v[2], 6);
 }

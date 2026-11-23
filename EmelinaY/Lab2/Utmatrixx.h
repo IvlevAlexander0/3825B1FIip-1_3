@@ -3,6 +3,12 @@
 #include <stdexcept>
 #include <iostream>
 
+inline void ValidateMatrixSize(int s) {
+    if (s < 0 || s > MAX_MATRIX_SIZE) {
+        throw std::invalid_argument("Invalid matrix size");
+    }
+}
+
 template <class ValType>
 TVector<ValType>::TVector(int s, int si) : Size(s), StartIndex(si) {
     if (s < 0 || s > MAX_VECTOR_SIZE) {
@@ -25,7 +31,7 @@ TVector<ValType>::TVector(const TVector& v) {
     StartIndex = v.StartIndex;
     if (Size > 0) {
         pVector = new ValType[Size];
-        for (size_t i = 0; i < Size; ++i) {
+        for (int i = 0; i < Size; ++i) {
             pVector[i] = v.pVector[i];
         }
     }
@@ -38,6 +44,7 @@ template <class ValType>
 TVector<ValType>::~TVector() {
     delete[] pVector;
 }
+
 template <class ValType>
 ValType& TVector<ValType>::operator[](int pos) {
     if (pos < StartIndex || pos >= StartIndex + Size) {
@@ -55,18 +62,11 @@ const ValType& TVector<ValType>::operator[](int pos) const {
 }
 
 template <class ValType>
-bool TVector<ValType>::operator==(const TVector& v) const
-{
-    if (Size != v.Size) {
-        return false;
-    }
-    if (StartIndex != v.StartIndex) {
-        return false;
-    }
+bool TVector<ValType>::operator==(const TVector& v) const {
+    if (Size != v.Size) return false;
+    if (StartIndex != v.StartIndex) return false;
     for (int i = 0; i < Size; ++i) {
-        if (!(pVector[i] == v.pVector[i])) {
-            return false;
-        }
+        if (!(pVector[i] == v.pVector[i])) return false;
     }
     return true;
 }
@@ -84,7 +84,7 @@ TVector<ValType>& TVector<ValType>::operator=(const TVector& v) {
         StartIndex = v.StartIndex;
         if (Size > 0) {
             pVector = new ValType[Size];
-            for (size_t i = 0; i < Size; ++i) {
+            for (int i = 0; i < Size; ++i) {
                 pVector[i] = v.pVector[i];
             }
         }
@@ -138,8 +138,7 @@ TVector<ValType> TVector<ValType>::operator+(const TVector& v) const {
 }
 
 template <class ValType>
-TVector<ValType> TVector<ValType>::operator-(const TVector& v) const
-{
+TVector<ValType> TVector<ValType>::operator-(const TVector& v) const {
     if (Size != v.Size) {
         throw std::invalid_argument("Different vector sizes");
     }
@@ -168,13 +167,9 @@ ValType TVector<ValType>::operator*(const TVector& v) const {
     return sum;
 }
 
-
 template <class ValType>
-TMatrix<ValType>::TMatrix(int s) : TVector<TVector<ValType>>(s) {
-    if (s < 0 || s > MAX_MATRIX_SIZE) {
-        throw std::out_of_range("Invalid size");
-    }
-    for (size_t i = 0; i < this->GetSize(); ++i) {
+TMatrix<ValType>::TMatrix(int s) : ValidateMatrixSize(s), TVector<TVector<ValType>>(s) {
+    for (int i = 0; i < this->GetSize(); ++i) {
         this->pVector[i] = TVector<ValType>(this->GetSize() - i, i);
     }
 }
@@ -220,8 +215,7 @@ TMatrix<ValType> TMatrix<ValType>::operator+(const TMatrix& mt) const {
 }
 
 template <class ValType>
-TMatrix<ValType> TMatrix<ValType>::operator-(const TMatrix& mt) const
-{
+TMatrix<ValType> TMatrix<ValType>::operator-(const TMatrix& mt) const {
     if (this->GetSize() != mt.GetSize()) {
         throw std::invalid_argument("Different matrix sizes");
     }
