@@ -2,6 +2,13 @@
 #include "utmatrix.h"
 #include <stdexcept>
 
+inline int checkMatrixSize(int s)
+{
+    if (s < 0 || s > MAX_MATRIX_SIZE)
+        throw std::invalid_argument("TMatrix: invalid size");
+    return s;
+}
+
 //TVector
 
 template <class ValType>
@@ -14,7 +21,7 @@ TVector<ValType>::TVector(int s, int si)
 
     Size = s;
     StartIndex = si;
-    pVector = new ValType[Size > 0 ? Size : 1];
+    pVector = new ValType[Size > 0 ? Size : 1]();
 }
 
 template <class ValType>
@@ -22,7 +29,7 @@ TVector<ValType>::TVector(const TVector& v)
 {
     Size = v.Size;
     StartIndex = v.StartIndex;
-    pVector = new ValType[Size > 0 ? Size : 1];
+    pVector = new ValType[Size > 0 ? Size : 1]();
     for (int i = 0; i < Size; ++i)
         pVector[i] = v.pVector[i];
 }
@@ -77,11 +84,11 @@ TVector<ValType>& TVector<ValType>::operator=(const TVector& v)
     {
         delete[] pVector;
         Size = v.Size;
-        pVector = new ValType[Size > 0 ? Size : 1];
+        pVector = new ValType[Size > 0 ? Size : 1]();
     }
     StartIndex = v.StartIndex;
     for (int i = 0; i < Size; ++i)
-        pVector[i] = v.pVector[i];
+        pVector[i] = (i >= StartIndex) ? v.pVector[i] : ValType{};
     return *this;
 }
 
@@ -152,11 +159,8 @@ ValType TVector<ValType>::operator*(const TVector& v) const
 
 template <class ValType>
 TMatrix<ValType>::TMatrix(int s)
-    : TVector<TVector<ValType>>(s, 0)
+    : TVector<TVector<ValType>>(checkMatrixSize(s), 0)
 {
-    if (s < 0 || s > MAX_MATRIX_SIZE)
-        throw std::invalid_argument("TMatrix: invalid size");
-
     for (int i = 0; i < s; ++i)
     {
         this->pVector[i] = TVector<ValType>(s, i);

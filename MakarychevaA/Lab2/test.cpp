@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <gtest/gtest.h>
+#include <sstream>
 #include "realization_utmatrix.h"
 
 //TVector
@@ -130,6 +131,32 @@ TEST(TVector, InputWithNonZeroStartIndex)
     EXPECT_EQ(v[3], 20);
 }
 
+TEST(TVector, AssignmentToNonZeroStartIndex)
+{
+    TVector<int> a(4, 0);
+    a[0] = 1; a[1] = 2; a[2] = 3; a[3] = 4;
+
+    TVector<int> b(4, 2);
+    b[2] = 30; b[3] = 40;
+
+    a = b;
+    EXPECT_EQ(a.GetStartIndex(), 2);
+    EXPECT_EQ(a[2], 30);
+    EXPECT_EQ(a[3], 40);
+
+    std::ostringstream os;
+    os << a;
+    EXPECT_EQ(os.str(), "0 0 30 40");
+}
+
+TEST(TVector, ConstructorZeroInitializes)
+{
+    TVector<int> v(4, 2);
+    std::ostringstream os;
+    os << v;
+    EXPECT_EQ(os.str(), "0 0 0 0");
+}
+
 //TMatrix
 
 TEST(TMatrix, DefaultConstructor)
@@ -240,4 +267,18 @@ TEST(TMatrix, OutputUpperTriangular)
     std::ostringstream os;
     os << m;
     EXPECT_EQ(os.str(), "1 2 3\n0 4 5\n0 0 6");
+}
+
+TEST(TMatrix, TooLargeSizeThrows)
+{
+    EXPECT_THROW(TMatrix<int>(MAX_MATRIX_SIZE + 1), std::invalid_argument);
+}
+
+TEST(TMatrix, ConversionRejectsInvalidStartIndex)
+{
+    TVector<TVector<int>> vv(2, 0);
+    vv[0] = TVector<int>(2, 0);
+    vv[1] = TVector<int>(2, 0);   
+
+    EXPECT_THROW(TMatrix<int> m(vv), std::invalid_argument);
 }
