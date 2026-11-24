@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "utmatrix.h"
+#include "matrix123.h"
 #include <sstream>
 
 TEST(TVectorTest, ConstructorAndAccess) {
@@ -118,4 +118,14 @@ TEST(TMatrixTest, AddSub) {
 
     TMatrix<int> c(3);
     EXPECT_THROW(a + c, std::invalid_argument);
+}
+
+TEST(TMatrixTest, StartIndexCoverage) {
+    TMatrix<int> m(4);
+    EXPECT_EQ(m.GetStartIndex(), 0);
+
+    EXPECT_EQ(m[0].GetStartIndex(), 0);
+    EXPECT_EQ(m[1].GetStartIndex(), 1);
+    EXPECT_EQ(m[2].GetStartIndex(), 2);
+    EXPECT_EQ(m[3].GetStartIndex(), 3);
 }

@@ -232,7 +232,7 @@ template <class ValType>
 TMatrix<ValType>::TMatrix(int s) : TVector<TVector<ValType>>(s) {
     if (s < 0 || s > MAX_MATRIX_SIZE) throw std::invalid_argument("Invalid size");
     for (int i = 0; i < s; ++i) {
-        this->pVector[i] = TVector<ValType>(s - i, 0); // ÎØÈÁÊÀ ÇÄÅÑÜ: äîëæíî áûòü i âìåñòî 0
+        this->pVector[i] = TVector<ValType>(s - i, i); 
     }
 }
 
